@@ -4,4 +4,3 @@ class Agente:
         self.start = start
         self.goal = goal
         self.caminho = []
-        self.posicao_atual = start

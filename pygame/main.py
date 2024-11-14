@@ -2,7 +2,7 @@ import pygame
 import sys
 import numpy as np
 from labirinto import Labirinto
-from busca import buscaLargura
+from busca import buscaProfundidade
 
 #Iniciar pygame
 pygame.init()
@@ -23,8 +23,16 @@ tamanho_celula = largura // 12
 
 #Iniciar labirinto e posição do agente e obejtivo do agente
 labirinto = Labirinto()
-posicao_agente = (4,11)
+posicao_agente = (4,10)
 goal = (10, 0)
+
+caminho = buscaProfundidade(labirinto, posicao_agente, goal)
+if not caminho:
+    print("Erro ao encontrar um caminho")
+else:
+    print("caminho encontrado: ", caminho)
+    
+passo_atual = 0
 
 #Labirinto
 def labirinto_desenho():
@@ -34,6 +42,7 @@ def labirinto_desenho():
             pygame.draw.rect(tela, cor, (y * tamanho_celula, x * tamanho_celula, tamanho_celula, tamanho_celula))
 
 def agente_desenho(posicao_agente, goal):
+
     # Desenhar o agente
     pygame.draw.circle(tela, VERDE, 
                        (posicao_agente[1] * tamanho_celula + tamanho_celula // 2, 
@@ -46,19 +55,28 @@ def agente_desenho(posicao_agente, goal):
                         goal[0] * tamanho_celula + tamanho_celula // 2), 
                        tamanho_celula // 3)
 
+
 #Loop do jogo
 running = True
+
+#Teste para controlar a velocidade do agente
+ControleVelocidade = pygame.time.Clock()
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    if caminho and passo_atual < len(caminho):
+        posicao_agente = caminho[passo_atual]
+        passo_atual += 1
 
     tela.fill(BRANCO)
     labirinto_desenho()
     agente_desenho(posicao_agente, goal)
 
     pygame.display.flip()
+    ControleVelocidade.tick(1)
 
-
+pygame.display.update()
 pygame.quit()
 sys.exit()
