@@ -26,17 +26,19 @@ labirinto = Labirinto()
 posicao_agente = (4, 10)
 goal = (10, 0)
 
+#configuração inicial
 agente = Agente(labirinto, posicao_agente, goal)
 
-agente.buscar_caminho(metodo="profundidade")
+#buscar caminho
+agente.buscar_caminho(metodo="gulosa")
 
-# Obter o caminho usando a busca em largura
-caminho = busca_profundidade(labirinto, posicao_agente, goal)
-if not caminho:
-    print("Erro ao encontrar um caminho")
+if not agente.caminho:
+    print("Nenhum caminho encontrado. Saindo...")
+    pygame.quit()
     sys.exit()
-else:
-    print("Caminho encontrado:", caminho)
+
+# Caminho encontrado
+print("Caminho encontrado:", agente.caminho)
 
 # Inicializar posição e estado de animação
 passo_atual = 0
@@ -72,8 +74,8 @@ while running:
             running = False
 
     # Verificar se há caminho e se ainda há passos a seguir
-    if caminho and passo_atual < len(caminho):
-        proxima_posicao = caminho[passo_atual]
+    if agente.caminho and passo_atual < len(agente.caminho):
+        proxima_posicao = agente.caminho[passo_atual]
         objetivo_x = proxima_posicao[1] * tamanho_celula + tamanho_celula // 2
         objetivo_y = proxima_posicao[0] * tamanho_celula + tamanho_celula // 2
 
