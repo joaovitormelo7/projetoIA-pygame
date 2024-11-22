@@ -1,7 +1,7 @@
 import pygame
 import sys
 from labirinto import Labirinto
-from busca import busca_profundidade
+from busca import busca_gulosa
 from agente import Agente
 
 # Iniciar pygame
