@@ -1,7 +1,10 @@
-import numpy as np 
+import numpy as np
 
 class Labirinto:
     def __init__(self, goal=None):
+        if goal is None or not isinstance(goal, tuple) or len(goal) != 2:
+            raise ValueError("O objetivo deve ser uma tupla com duas coordenadas") #debug manual
+        self.goal = goal
         # Definindo matriz do labirinto 12x12 (1: espaço livre, 0: parede)
         self.grid = np.array([
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -17,26 +20,16 @@ class Labirinto:
             [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ])
-        self.goal = goal        
 
-    
+        self.goal = goal
+
     def espaco_livre(self, x, y):
-        if 0 <= x < len(self.grid) and 0 <= y < len(self.grid[0]):
-            return self.grid[x][y] == 1
-        return False
-    
-    def vizinhos_validos(self, x, y, ordem=None):
+        return 0 <= x < len(self.grid) and 0 <= y < len(self.grid[0]) and self.grid[x][y] == 1
+
+    def vizinhos_validos(self, x, y):
         direcoes = [(0, 1), (-1, 0), (0, -1), (1, 0)]
-        vizinhos = []
-
-        for dx, dy in direcoes:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < len(self.grid) and 0 <= ny < len(self.grid[0]) and self.espaco_livre(nx, ny):
-                vizinhos.append((nx, ny))
-        
-        if ordem == "reversa":
-            return list(reversed(vizinhos))
-        elif ordem == "heuristica":
-            return sorted(vizinhos, key=lambda v: abs(v[0] - self.goal[0]) + abs(v[1] - self.goal[1]))
-        return vizinhos
-
+        return [
+            (x + dx, y + dy)
+            for dx, dy in direcoes
+            if self.espaco_livre(x + dx, y + dy)
+        ]

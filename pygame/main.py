@@ -1,7 +1,6 @@
 import pygame
 import sys
 from labirinto import Labirinto
-from busca import busca_gulosa
 from agente import Agente
 
 # Iniciar pygame
@@ -15,36 +14,40 @@ pygame.display.set_caption("Visualização do Labirinto")
 # Cores
 BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
-VERDE = (0, 255, 0)
+VERDE_CLARO = (200, 255, 200)
+VERMELHO_CLARO = (255, 200, 200)
 AZUL = (0, 0, 255)
 
 # Configuração do labirinto
 tamanho_celula = largura // 12
 
 # Iniciar labirinto e posições do agente e objetivo
-labirinto = Labirinto()
-posicao_agente = (4, 10)
+labirinto = Labirinto(goal=(10, 0))
+posicao_inicial = (4, 10)
 goal = (10, 0)
 
-#configuração inicial
-agente = Agente(labirinto, posicao_agente, goal)
+# Método de busca (largura ou profundidade)
+metodo_busca = "largura"
 
-#buscar caminho
-agente.buscar_caminho(metodo="gulosa")
+# Inicializar agente
+agente = Agente(labirinto, posicao_inicial, goal)
 
-if not agente.caminho:
-    print("Nenhum caminho encontrado. Saindo...")
+try:
+    if metodo_busca == "largura":
+        # Busca em largura
+        caminho, visitados, ordem_visita = agente.buscar_caminho(metodo="largura")
+    elif metodo_busca == "profundidade":
+        # Busca em profundidade
+        caminho, visitados, ordem_visita, ordem_map = agente.buscar_caminho(metodo="profundidade")
+    else:
+        raise ValueError("Método de busca inválido. Escolha 'largura' ou 'profundidade'.")
+except ValueError as e:
+    print(f"Erro: {e}")
     pygame.quit()
     sys.exit()
 
 # Caminho encontrado
-print("Caminho encontrado:", agente.caminho)
-
-# Inicializar posição e estado de animação
-passo_atual = 0
-posicao_animada = [posicao_agente[1] * tamanho_celula + tamanho_celula // 2,
-                   posicao_agente[0] * tamanho_celula + tamanho_celula // 2]
-velocidade = 5
+print("Caminho encontrado:", caminho)
 
 # Função para desenhar o labirinto
 def labirinto_desenho():
@@ -53,55 +56,58 @@ def labirinto_desenho():
             cor = PRETO if labirinto.grid[x][y] == 0 else BRANCO
             pygame.draw.rect(tela, cor, (y * tamanho_celula, x * tamanho_celula, tamanho_celula, tamanho_celula))
 
-# Função para desenhar o agente e o objetivo
-def agente_desenho():
-    # Desenhar o agente na posição animada
-    pygame.draw.circle(tela, VERDE, (int(posicao_animada[0]), int(posicao_animada[1])), tamanho_celula // 3)
-    
-    # Desenhar o objetivo
-    pygame.draw.circle(tela, AZUL, 
-                       (goal[1] * tamanho_celula + tamanho_celula // 2, 
-                        goal[0] * tamanho_celula + tamanho_celula // 2), 
-                       tamanho_celula // 3)
+# Função para desenhar o rastro
+def rastro_desenho(visitados):
+    for (x, y) in visitados:
+        pygame.draw.rect(
+            tela,
+            VERDE_CLARO if metodo_busca == "largura" else VERMELHO_CLARO,
+            (y * tamanho_celula, x * tamanho_celula, tamanho_celula, tamanho_celula),
+        )
+    pygame.draw.rect(tela, AZUL, (goal[1] * tamanho_celula, goal[0] * tamanho_celula, tamanho_celula, tamanho_celula))
 
-# Loop do jogo
+# Loop principal para animação
 running = True
 controle_velocidade = pygame.time.Clock()
+indice = 0  # Índice para o caminho do agente
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # Verificar se há caminho e se ainda há passos a seguir
-    if agente.caminho and passo_atual < len(agente.caminho):
-        proxima_posicao = agente.caminho[passo_atual]
-        objetivo_x = proxima_posicao[1] * tamanho_celula + tamanho_celula // 2
-        objetivo_y = proxima_posicao[0] * tamanho_celula + tamanho_celula // 2
-
-        # Mover na direção do próximo objetivo
-        if posicao_animada[0] < objetivo_x:
-            posicao_animada[0] += velocidade
-        elif posicao_animada[0] > objetivo_x:
-            posicao_animada[0] -= velocidade
-
-        if posicao_animada[1] < objetivo_y:
-            posicao_animada[1] += velocidade
-        elif posicao_animada[1] > objetivo_y:
-            posicao_animada[1] -= velocidade
-
-        # Verificar se alcançou a posição do próximo passo
-        if abs(posicao_animada[0] - objetivo_x) < velocidade and abs(posicao_animada[1] - objetivo_y) < velocidade:
-            posicao_animada = [objetivo_x, objetivo_y]
-            posicao_agente = proxima_posicao
-            passo_atual += 1
-
-    # Atualizar tela
     tela.fill(BRANCO)
     labirinto_desenho()
-    agente_desenho()
+    rastro_desenho(visitados)
+
+    if indice < len(caminho):
+        # Desenhar o agente na célula atual
+        pos_atual = caminho[indice]
+        pygame.draw.rect(
+            tela,
+            AZUL,
+            (
+                pos_atual[1] * tamanho_celula + tamanho_celula // 4,
+                pos_atual[0] * tamanho_celula + tamanho_celula // 4,
+                tamanho_celula // 2,
+                tamanho_celula // 2,
+            ),
+        )
+        indice += 1
+    else:
+        # Mostrar o agente na posição final
+        pygame.draw.rect(
+            tela,
+            AZUL,
+            (
+                goal[1] * tamanho_celula + tamanho_celula // 4,
+                goal[0] * tamanho_celula + tamanho_celula // 4,
+                tamanho_celula // 2,
+                tamanho_celula // 2,
+            ),
+        )
+
     pygame.display.flip()
-    controle_velocidade.tick(30)
+    controle_velocidade.tick(5)  # Velocidade da animação (5 FPS)
 
 pygame.quit()
-sys.exit()
