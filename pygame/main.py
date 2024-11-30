@@ -2,6 +2,7 @@ import pygame
 from labirinto import Labirinto
 from agente import Agente
 
+
 pygame.init()
 
 # Configurações da tela
@@ -15,6 +16,7 @@ BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
 VERDE = (0, 255, 0)
 VERMELHO = (255, 0, 0)
+AZUL = (0, 0, 255)
 
 # Inicializar labirinto
 labirinto = Labirinto(goal=(10, 0))
@@ -22,16 +24,18 @@ labirinto = Labirinto(goal=(10, 0))
 # Inicializar agente
 agente = Agente(labirinto, (4, 10), (10, 0))
 
-# Escolher método de busca
-metodo_busca = "largura"  # Altere para "largura" para usar a busca em largura
+# Escolher método de busca 'largura', 'profundidade' ou 'a_estrela'
+metodo_busca = "a_estrela"  
 
 # Executar busca
 if metodo_busca == "largura":
     caminho, visitados, ordem_visita = agente.buscar_caminho(metodo="largura")
 elif metodo_busca == "profundidade":
     caminho, visitados, ordem_visita = agente.buscar_caminho(metodo="profundidade")
+elif metodo_busca == "a_estrela":
+    caminho, visitados, ordem_visita = agente.buscar_caminho(metodo="a_estrela")
 else:
-    raise ValueError("Método de busca inválido. Escolha 'largura' ou 'profundidade'.")
+    raise ValueError("Método de busca inválido. Escolha 'largura' ou 'profundidade' ou 'a_estrela'.")
 
 # Funções de desenho
 def desenhar_labirinto():
