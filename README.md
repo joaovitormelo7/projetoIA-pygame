@@ -60,7 +60,7 @@ Os algoritmos são visualizados com Pygame:
 | **Velocidade**        | Mais lenta (explora tudo)       | Mais rápida em ambientes pequenos | Rápida e eficiente             |
 | **Caminho Encontrado**| Garante o menor caminho         | Nem sempre o menor           | Sempre o menor caminho         |
 | **Espaço Visitado**   | Explora toda a área até o objetivo | Explora profundamente primeiro | Explora o essencial (heurística) |
-| **Visualização**      | 🟩 Rastro progressivo em verde  | 🟥 Rastro progressivo em vermelho | 🟦 Rastro progressivo em azul |
+| **Visualização**      | 🟩 Rastro progressivo em verde  | 🟥 Rastro progressivo em vermelho |  🟥 Rastro progressivo em vermelho |
 
 ---
 
