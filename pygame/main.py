@@ -2,6 +2,24 @@ import pygame
 from labirinto import Labirinto
 from agente import Agente
 
+def escolher_metodo():
+    print("Selecione o método de busca:")
+    print("1 - Busca em Largura (BFS)")
+    print("2 - Busca em Profundidade (DFS)")
+    print("3 - Busca A* (A-estrela)")
+    escolha = input("Digite o número correspondente ao método desejado: ")
+
+    if escolha == "1":
+        return "largura"
+    
+    elif escolha == "2":
+        return "profundidade"
+    
+    elif escolha == "3":
+        return "a_estrela"
+    else:
+        print("Escolha inválida. Tente novamente.")
+        return escolher_metodo()
 
 pygame.init()
 
@@ -25,7 +43,7 @@ labirinto = Labirinto(goal=(10, 0))
 agente = Agente(labirinto, (4, 10), (10, 0))
 
 # Escolher método de busca 'largura', 'profundidade' ou 'a_estrela'
-metodo_busca = "a_estrela"  
+metodo_busca = escolher_metodo()  
 
 # Executar busca
 if metodo_busca == "largura":
