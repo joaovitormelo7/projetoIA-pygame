@@ -2,6 +2,7 @@ import pygame
 from labirinto import Labirinto
 from agente import Agente
 
+# Menu para escolher o metodo de busca, a busca so irá começar após a escolha
 def escolher_metodo():
     print("Selecione o método de busca:")
     print("1 - Busca em Largura (BFS)")
